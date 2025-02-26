@@ -1,8 +1,39 @@
-const x = [12, 37, 5, 42, 19];
-const y = [28, 4, 33, 21, 50];
-const z = [47, 13, 9, 36, 22];
+const fs=require('fs');
+const input=fs.readFileSync('input.txt').toString().trim().split('\n');
 
-//  위의 배열들 중 가장 큰 수를 출력하는 가장 간결한 코드를 작성해보세요.
+const [N, M]=input[0].split(' ').map(Number);
+const DNAs=[];
+const alpha=['A','C','G','T'];
+let str="";
+let distance=0;
 
-const max=Math.max(...x,...y,...z);
-console.log(max);
+for(let i=0; i<N; i++){
+    DNAs.push(input[i+1].trim());
+}
+
+for(let i=0; i<M; i++){
+    const cnt=[0,0,0,0];
+    for(const DNA of DNAs){
+        if(DNA[i]==='A'){
+            cnt[0]++;
+        }
+        else if(DNA[i]==='C'){
+            cnt[1]++;
+        }
+        else if(DNA[i]==='G'){
+            cnt[2]++;
+        }
+        else if(DNA[i]==='T'){
+            cnt[3]++;
+        }
+    }
+
+    const maxcnt=Math.max(...cnt);
+    const index=cnt.indexOf(maxcnt);
+
+    str +=alpha[index];
+    distance += N-maxcnt;
+}
+
+console.log(str);
+console.log(distance);
