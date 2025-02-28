@@ -9,6 +9,11 @@ const input = fs.readFileSync('input.txt').toString().trim().split('\n');
 const n = Number(input[0]);
 let dice = input[1].split(' ').map(Number);
 
+// reduce 사용법
+// const sumWithInitial = array1.reduce(
+//     (accumulator, currentValue) => accumulator + currentValue,
+//     initialValue,
+//   );
 if (n === 1) {
     dice.sort((a, b) => a - b);
     dice.pop();
