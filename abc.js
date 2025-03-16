@@ -1,28 +1,61 @@
 const fs=require('fs');
 const input=fs.readFileSync('input.txt').toString().trim().split('\n');
 
-const n=Number(input[0]);
-const arr=[];
+const N=Number(input[0]);
+let line=1;
+let flowers=[];
 
-for(let i=0; i<n; i++){
-    const[p, d]=input[i+1].split(' ').map(Number);
-    arr.push({pay:p, day:d});
+for(let i=0; i<N; i++){
+    const [startMonth, startDay, endMonth, endDay]=input[line].split(' ').map(Number);
+    line++;
+    flowers.push([startMonth, startDay, endMonth, endDay]);
 }
 
-//1. 높은 순서대로 배열
-arr.sort((a,b)=> b.pay-a.pay);
+//정렬
+flowers.sort((a,b)=> {
+    if(a[0]!==b[0]) return a[0]-b[0];//일찍 피는 순
+    if(a[1]!==b[1]) return a[1]-b[1];//일찍 피는 순
+    if(a[2]!==b[2]) return b[2]-a[2];//늦게 지는 순
+    return b[3]-a[3];//늦게 지는 순
+})
 
-const dailymoney=new Array(10000).fill(0);
+let curMonth=3;
+let curDay=1;
+let lastMonth=11;
+let lastDay=30;
+let idx=0;
+let maxEndMonth=0, maxEndDay=0;
 
-for(let i=0; i<n; i++){
-    for(let j=arr[i].day-1; j>=0; j--){
-        //2. 비어있는 곳에 넣기
-        if(dailymoney[j]===0){
-            dailymoney[j]=arr[i].pay;
+while(curMonth<lastMonth || (curMonth===lastMonth && curDay < lastMonth)){
+    let found =false;
+
+    while(idx<N){
+        let[sMonth, sDay, eMonth, eDay]=flowers[idx];
+        
+        // 3/1보다 늦는다면 멈추기
+        if(sMonth>curMonth || (sMonth===curMonth && sDay >curDay))
             break;
+        
+        // 3/1 이전이면서, 가장 늦는것
+        if(eMonth > maxEndMonth || (eMonth === maxEndMonth && eDay> maxEndDay)){
+            maxEndMonth=eMonth;
+            maxEndDay=eDay;
+            found=true;
         }
+        idx++;
     }
+    //못 찾은 경우
+    if(!found){ 
+        console.log(0);
+        return;
+    }
+
+    //찾은 경우
+    curMonth=maxEndMonth;
+    curDay=maxEndDay;
+    cnt++;
+
+    if(curMonth> lastMonth || (curMonth===lastMonth || curDay > lastDay)) break;
 }
 
-const sum=(arr)=> arr.reduce((sum, cur) => sum + cur, 0);
-console.log(sum(dailymoney));
+console.log(cnt);

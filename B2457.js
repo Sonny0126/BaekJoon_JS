@@ -32,6 +32,7 @@ let lastMonth=11, lastDay=30;
 let idx=0;
 let maxEndMonth=0, maxEndDay=0;
 
+//현재 날짜가, 마지막 날짜 이전인 경우 (찾지못함)
 while(curMonth <lastMonth || (curMonth===lastMonth && curDay <= lastDay)){
   let found=false;
 
@@ -42,13 +43,12 @@ while(curMonth <lastMonth || (curMonth===lastMonth && curDay <= lastDay)){
     //현재 날짜보다 더 늦게 피는 꽃이면 중지
     if(sMonth > curMonth || (sMonth===curMonth && sDay > curDay)) break;
 
-    //가장 늦게 지는 꽃을 선택
+    //현재 날짜보다 일찍 피면서, 가장 늦게 지는 꽃을 선택
     if(eMonth > maxEndMonth || (eMonth === maxEndMonth && eDay > maxEndDay)){
       maxEndMonth=eMonth;
       maxEndDay=eDay;
       found=true;
     }
-
     idx++;
   }
   //현재 날짜보다 더 이어갈수있는 꽃이 없으면 0 출력
