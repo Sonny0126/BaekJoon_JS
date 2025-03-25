@@ -1,61 +1,35 @@
 const fs=require('fs');
-const input=fs.readFileSync('input.txt').toString().trim().split('\n');
+const { send } = require('process');
+const input=fs.readFileSync('input.txtx').toString().trim().split('\n');
 
-const N=Number(input[0]);
-let line=1;
-let flowers=[];
+const [N,C]=input[0].split(' ').map(Number);
+const M=Number(input[1]);
+
+let arr=[];
+for(let i=2; i<M+2; i++){
+    let [sendNum, recNum, cntNum]=input[i].split(' ').map(Number);
+    arr.push({sendNum, recNum, cntNum});
+}
+
+arr.sort((a,b)=> a.recNum-b.recNum);
+
+let capacity=new Array(N+1).fill(0);
+let sumDelivered=0;
 
 for(let i=0; i<N; i++){
-    const [startMonth, startDay, endMonth, endDay]=input[line].split(' ').map(Number);
-    line++;
-    flowers.push([startMonth, startDay, endMonth, endDay]);
-}
 
-//정렬
-flowers.sort((a,b)=> {
-    if(a[0]!==b[0]) return a[0]-b[0];//일찍 피는 순
-    if(a[1]!==b[1]) return a[1]-b[1];//일찍 피는 순
-    if(a[2]!==b[2]) return b[2]-a[2];//늦게 지는 순
-    return b[3]-a[3];//늦게 지는 순
-})
+    let maxLoad=cntNum;
 
-let curMonth=3;
-let curDay=1;
-let lastMonth=11;
-let lastDay=30;
-let idx=0;
-let maxEndMonth=0, maxEndDay=0;
-
-while(curMonth<lastMonth || (curMonth===lastMonth && curDay < lastMonth)){
-    let found =false;
-
-    while(idx<N){
-        let[sMonth, sDay, eMonth, eDay]=flowers[idx];
-        
-        // 3/1보다 늦는다면 멈추기
-        if(sMonth>curMonth || (sMonth===curMonth && sDay >curDay))
-            break;
-        
-        // 3/1 이전이면서, 가장 늦는것
-        if(eMonth > maxEndMonth || (eMonth === maxEndMonth && eDay> maxEndDay)){
-            maxEndMonth=eMonth;
-            maxEndDay=eDay;
-            found=true;
-        }
-        idx++;
+    //현재 구간에서 트럭이 최대한 적재가능한 양
+    for(let i=sendNum; i<recNum; i++){
+        maxload=Math.min(maxLoad, C-capacity[i]);
     }
-    //못 찾은 경우
-    if(!found){ 
-        console.log(0);
-        return;
+    //적재 가능한 양 실음
+    for(let i=sendNum; i<recNum; i++){
+        capacity[i]+=maxload;
     }
 
-    //찾은 경우
-    curMonth=maxEndMonth;
-    curDay=maxEndDay;
-    cnt++;
-
-    if(curMonth> lastMonth || (curMonth===lastMonth || curDay > lastDay)) break;
+    sumDelivered+=maxload;
 }
 
-console.log(cnt);
+console.log(sumDelivered);
