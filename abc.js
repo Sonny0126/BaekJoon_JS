@@ -1,35 +1,30 @@
 const fs=require('fs');
-const { send } = require('process');
-const input=fs.readFileSync('input.txtx').toString().trim().split('\n');
+const input=fs.readFileSync('input.txt').toString().trim().split('\n');
 
-const [N,C]=input[0].split(' ').map(Number);
-const M=Number(input[1]);
+const [N, L]=input[0].split(' ').map(Number);
 
-let arr=[];
-for(let i=2; i<M+2; i++){
-    let [sendNum, recNum, cntNum]=input[i].split(' ').map(Number);
-    arr.push({sendNum, recNum, cntNum});
+let U=[];
+
+for(let i=1; i<=N; i++){
+    let [a,b]=input[i].split(' ').map(Number);
+    U.push({start:a, end:b});
 }
+//정렬
+U.sort((a,b)=>a.start-b.start);
 
-arr.sort((a,b)=> a.recNum-b.recNum);
-
-let capacity=new Array(N+1).fill(0);
-let sumDelivered=0;
+let Nulcnt=0;
+let lastU=0;//마지막 위치
 
 for(let i=0; i<N; i++){
+    let start=Math.max(U[i].start, lastU);
+    let end=U[i].end;
 
-    let maxLoad=cntNum;
+    if(start>=end) continue;
 
-    //현재 구간에서 트럭이 최대한 적재가능한 양
-    for(let i=sendNum; i<recNum; i++){
-        maxload=Math.min(maxLoad, C-capacity[i]);
-    }
-    //적재 가능한 양 실음
-    for(let i=sendNum; i<recNum; i++){
-        capacity[i]+=maxload;
-    }
-
-    sumDelivered+=maxload;
+    let len=end-start;
+    let temp=Math.ceil(len/L);
+    Nulcnt+=temp;
+    lastU=start+temp *L;
 }
 
-console.log(sumDelivered);
+console.log(Nulcnt);
