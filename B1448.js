@@ -21,5 +21,6 @@ for(let i=0; i<N; i++){
   if(max<sum) maxSum=max+sum;
   else arr.shift();
 }
+
 if (arr.length<3) console.log(-1);
 else console.log(maxSum);
