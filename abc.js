@@ -1,32 +1,37 @@
-const fs = require('fs');
-const input = fs.readFileSync('input.txt').toString().trim().split('\n');
+//1. 빈 문자열 안정
+//2. S가 안정적이면, {S}도 안정적
+// 입력의 마지말줄은 '-'가 주어짐
+// 테스트 케이스 대해서, 번호, 입력, 안정적으로 바꾸는데 필요함
 
-const num = Number(input[0]);
+const fs = require("fs");
+let input = fs.readFileSync("input.txt").toString().split("\n");
 
+let cnt = 0;
 let arr = [];
-for (let i = 1; i <= num; i++) {
-    let [start, end] = input[i].split(' ').map(Number);
-    arr.push([start, end]);
-}
-
-// 1️⃣ 시작 시간을 기준으로 정렬
-arr.sort((a, b) => a[0] - b[0]);
-
-let endTimes = []; // 강의 종료 시간을 저장하는 배열
-
-for (let i = 0; i < num; i++) {
-    let [s, e] = arr[i];
-
-    // 2️⃣ 현재 강의실 중 가장 빨리 끝나는 강의실 찾기
-    endTimes.sort((a, b) => a - b); // 종료 시간을 기준으로 정렬
-    
-    if (endTimes.length > 0 && endTimes[0] <= s) {
-        // 가장 빨리 끝나는 강의실을 재사용 가능 -> 기존 강의실 갱신
-        endTimes.shift(); 
+for (let i = 0; i < input.length; i++) {
+  if (input[i][0] === "-") break;
+  arr = [];
+  cnt = 0;
+  input[i] = input[i].split("");
+  for (let j of input[i]) {
+    if (j === "{") {
+      arr.push(j);
+    } else if (j === "}") {
+      if (arr[arr.length - 1] === "{") {
+        arr.pop();
+      } else {
+        arr.push(j);
+      }
     }
-    
-    // 3️⃣ 새 강의 종료 시간 추가
-    endTimes.push(e);
-}
+  }
 
-console.log(endTimes.length);
+  const len = arr.length;
+  for (let k = 0; k < len; k++) {
+    if (k % 2 === 0 && arr[k] === "}") {
+      cnt++;
+    } else if (k % 2 === 1 && arr[k] === "{") {
+      cnt++;
+    }
+  }
+  console.log(`${i + 1}. ${cnt}`);
+}
