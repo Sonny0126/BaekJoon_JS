@@ -1,37 +1,46 @@
-//1. 빈 문자열 안정
-//2. S가 안정적이면, {S}도 안정적
-// 입력의 마지말줄은 '-'가 주어짐
-// 테스트 케이스 대해서, 번호, 입력, 안정적으로 바꾸는데 필요함
+// i번 공장에서 라면을 하나 구매한다(1 ≤ i ≤ N). 이 경우 비용은 3원이 든다.
+// i번 공장과 (i+1)번 공장에서 각각 라면을 하나씩 구매한다(1 ≤ i ≤ N-1). 이 경우 비용은 5원이 든다.
+// i번 공장과 (i+1)번 공장, (i+2)번 공장에서 각각 라면을 하나씩 구매한다(1 ≤ i ≤ N-2). 이 경우 비용은 7원이 든다.
+//최소 비용으로 라면 구매하기
 
-const fs = require("fs");
-let input = fs.readFileSync("input.txt").toString().split("\n");
+const fs=require('fs');
+const input=fs.readFileSync('input.txt').toString().trim().split('\n');
 
-let cnt = 0;
-let arr = [];
-for (let i = 0; i < input.length; i++) {
-  if (input[i][0] === "-") break;
-  arr = [];
-  cnt = 0;
-  input[i] = input[i].split("");
-  for (let j of input[i]) {
-    if (j === "{") {
-      arr.push(j);
-    } else if (j === "}") {
-      if (arr[arr.length - 1] === "{") {
-        arr.pop();
-      } else {
-        arr.push(j);
-      }
-    }
+const N=Number(input[0]);
+
+let arr=input[1].split(' ').map(Number);
+
+let coin=0;
+
+//3개
+for(let i=0; i<N-2; i++){
+
+  //예외 경우 처리 (arr[i+1]>arr[i+1])
+  if(arr[i+1]>arr[i+2]){//3개 처리가 아닌 2개처리
+    let cnt=Math.min(arr[i], arr[i+1] - arr[i+2]);
+    arr[i]-=cnt;
+    arr[i+1]-=cnt;
+    coin +=cnt *5;
   }
 
-  const len = arr.length;
-  for (let k = 0; k < len; k++) {
-    if (k % 2 === 0 && arr[k] === "}") {
-      cnt++;
-    } else if (k % 2 === 1 && arr[k] === "{") {
-      cnt++;
-    }
-  }
-  console.log(`${i + 1}. ${cnt}`);
+  let cnt=Math.min(arr[i], arr[i+1], arr[i+2]);
+  arr[i]-=cnt;
+  arr[i+1]-=cnt;
+  arr[i+2]-=cnt;
+  coin+=cnt*7;
 }
+
+//2개
+for(let i=0; i<N-1; i++){
+  let cnt=Math.min(arr[i], arr[i+1]);
+  arr[i]-=cnt;
+  arr[i+1]-=cnt;
+  coin +=cnt *5;
+}
+
+//1개
+for(let i=0; i<N; i++){
+  coin +=arr[i] * 3;
+}
+
+console.log(coin);
