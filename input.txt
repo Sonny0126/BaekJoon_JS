@@ -1,4 +1,2 @@
-sequence subsequence
-person compression
-VERDI vivaVittorioEmanueleReDiItalia
-caseDoesMatter CaseDoesMatter
+5
+1 1 1 0 2

@@ -1,63 +1,75 @@
-const fs = require('fs');
-const input = fs.readFileSync('input.txt').toString().trim().split('\n');
+//N개 강의실
+// 강의 번호, 강의 시작시간, 강의 종료 시간
+const fs=require('fs');
+const input=fs.readFileSync('input.txt').toString().trim().split('\n');
 
-const N = Number(input[0]);
-let arr = [];
+const N=Number(input[0]);
+let arr=[];
 
-for (let i = 1; i <= N; i++) {
-    let [Gnum, Gstart, Gend] = input[i].split(' ').map(Number);
-    arr.push({ num: Gnum, start: Gstart, end: Gend });
+for(let i=1; i<=N; i++){
+    let[Gnum, Gstart, Gend]=input[i].split(' ').map(Number);
+    arr.push({num:Gnum, start:Gstart, end:Gend});
 }
 
-// 시작 시간 기준으로 정렬
-arr.sort((a, b) => a.start - b.start);
+arr.sort((a,b)=>a.start-b.start);
 
 class MinHeap {
     constructor() {
-        this.heap = [null]; // 1-based index 사용
+        this.heap = [null];
     }
 
     insert(item) {
-        this.heap.push(item);
-        let current = this.heap.length - 1;
+      	// 가장 마지막 노드부터 비교하며 위치를 찾는 방식
+        let current = this.heap.length;
         while (current > 1) {
-            let parent = Math.floor(current / 2);
-            if (this.heap[parent] > this.heap[current]) {
-                [this.heap[parent], this.heap[current]] = [this.heap[current], this.heap[parent]];
+            const parent = Math.floor(current / 2);
+            if (this.heap[parent] > item) {
+                this.heap[current] = this.heap[parent];
                 current = parent;
             } else break;
         }
+        this.heap[current] = item;
     }
 
     remove() {
-        if (this.heap.length === 1) return null; // 빈 힙이면 종료
-        if (this.heap.length === 2) return this.heap.pop(); // 원소 하나면 바로 pop
+        let min = this.heap[1];
+        if (this.heap.length > 2) {
+          	// 힙의 최상단을 제거
+            this.heap[1] = this.heap[this.heap.length - 1];
+            this.heap.splice(this.heap.length - 1);
+			// 최상단부터 비교
+            let current = 1;
+            let leftChild = current * 2;
+            let rightChild = current * 2 + 1;
+          	// 트리 구조이기 때문에 왼쪽 자식이 없을 때까지 확인하면 됨
+            while (this.heap[leftChild]) {
+                let CompareItem = leftChild;
+                if (this.heap[rightChild] && this.heap[CompareItem] > this.heap[rightChild]) {
+                    CompareItem = rightChild;
+                }
+              	// 구조 분해 할당을 이용한 값 교체
+                if (this.heap[current] > this.heap[CompareItem]) {
+                    [this.heap[current], this.heap[CompareItem]] = [this.heap[CompareItem], this.heap[current]];
+                    current = CompareItem;
+                } else break;
 
-        const min = this.heap[1];
-        this.heap[1] = this.heap.pop(); // 마지막 원소를 루트로 올림
-        let current = 1;
-
-        while (true) {
-            let left = current * 2;
-            let right = current * 2 + 1;
-            let smallest = current;
-
-            if (left < this.heap.length && this.heap[left] < this.heap[smallest]) {
-                smallest = left;
+                leftChild = current * 2;
+                rightChild = current * 2 + 1;
             }
-            if (right < this.heap.length && this.heap[right] < this.heap[smallest]) {
-                smallest = right;
-            }
-            if (smallest === current) break;
-
-            [this.heap[current], this.heap[smallest]] = [this.heap[smallest], this.heap[current]];
-            current = smallest;
+        } else if (this.heap.length === 2) {
+            this.heap.splice(1, 1);
+        } else {
+            return null;
         }
         return min;
     }
 
     getMin() {
-        return this.heap.length > 1 ? this.heap[1] : null;
+        return this.heap[1];
+    }
+
+    getHeap() {
+        return this.heap;
     }
 
     getSize() {
